@@ -2,14 +2,16 @@ import os
 import json
 import unittest
 from flask_sqlalchemy import SQLAlchemy
-from app import create_app
-from database.models import setup_db, db_drop_and_create_all, Movies, Actors
+from casting import create_app
+from casting.models import db_drop_and_create_all, Movies, Actors
 from sqlalchemy.orm.session import close_all_sessions
 
 
 from dotenv import load_dotenv
 
 load_dotenv()  # take environment variables from .env.
+
+
 
 # This class represents the App test case
 class AppTestCase(unittest.TestCase):
@@ -18,7 +20,6 @@ class AppTestCase(unittest.TestCase):
         # Define test variables and initialize app.
         self.app = create_app()
         self.client = self.app.test_client
-        setup_db(self.app)
 
         # Binds the app to the current context
         with self.app.app_context():
@@ -154,7 +155,7 @@ class AppTestCase(unittest.TestCase):
 
         # Define movies route
         res = self.client().get("/movies/2", headers={"Authorization": f"Bearer {jwt}"})
-
+       
         # create the data dictionary from the URL request
         data = json.loads(res.data)
 
@@ -225,17 +226,12 @@ class AppTestCase(unittest.TestCase):
         # create the data dictionary from the URL request
         data = json.loads(res.data)
 
-        # create a query for movies using id used in the route
-        query_movies = Movies.query.filter(Movies.id == 1).one_or_none()
-
         # Check request return
         self.assertEqual(res.status_code, 200)
         self.assertEqual(data["success"], True)
         self.assertEqual(data["delete"], 1)
 
-        # check if the movie was deleted
-        self.assertFalse(query_movies)
-        
+       
 
     def test_delete_movie_resource_not_found(self):
 
@@ -380,17 +376,11 @@ class AppTestCase(unittest.TestCase):
         # create the data dictionary from the URL request
         data = json.loads(res.data)
 
-        # create a query for actors using id used in the route
-        query_actors = Actors.query.filter(Actors.id == 1).one_or_none()
-
         # Check request return
         self.assertEqual(res.status_code, 200)
         self.assertEqual(data["success"], True)
         self.assertEqual(data["delete"], 1)
 
-        # check if the actor was deleted
-        self.assertFalse(query_actors)
-    
     
     def test_delete_actor_resource_not_found(self):
 
