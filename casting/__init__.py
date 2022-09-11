@@ -12,7 +12,7 @@ def create_app():
     app = Flask(__name__)
     app.config.from_mapping(
         SECRET_KEY = os.environ.get('SECRET_KEY') or 'dev_key',
-        SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or \
+        SQLALCHEMY_DATABASE_URI = os.environ.get('POSTGRES_URL') or \
             'sqlite:///' + os.path.join(app.instance_path, 'casting.sqlite'),
         SQLALCHEMY_TRACK_MODIFICATIONS = False
     )
