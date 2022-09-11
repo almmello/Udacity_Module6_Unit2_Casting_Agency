@@ -1,23 +1,4 @@
-import os
-from sqlalchemy import Column, String, Integer
-from flask_sqlalchemy import SQLAlchemy
-from flask_migrate import Migrate
-import json
-
-from dotenv import load_dotenv
-
-load_dotenv()  # take environment variables from .env.
-
-db = SQLAlchemy()
-migrate = Migrate()
-
-# binds a flask application and a SQLAlchemy service
-def setup_db(app):
-    app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URL")
-    app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-    db.app = app
-    db.init_app(app)
-    migrate.init_app(app, db)
+from casting import db
 
 
 def db_drop_and_create_all():
@@ -49,7 +30,6 @@ def db_drop_and_create_all():
 # Movies with attributes title and release date
 
 class Movies(db.Model):
-    __tablename__ = "movies"
     # Autoincrementing, unique primary key
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String, nullable=False)
@@ -78,11 +58,10 @@ class Movies(db.Model):
         db.session.commit()
 
     def __repr__(self):
-        return json.dumps(self.read())
+        return '<Movie: {}>'.format(self.title)
 
 # Actors with attributes name, age and gender
 class Actors(db.Model):
-    __tablename__ = "actors"
     # Autoincrementing, unique primary key
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(120), nullable=False)
@@ -113,4 +92,4 @@ class Actors(db.Model):
         db.session.commit()
     
     def __repr__(self):
-        return json.dumps(self.read())
+        return '<Actors: {}>'.format(self.name)
